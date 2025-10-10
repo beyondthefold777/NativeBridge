@@ -1,60 +1,63 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Image, StyleSheet, Animated, Easing } from 'react-native';
 
 const SplashScreen = ({ navigation }) => {
-  const fadeAnim = new Animated.Value(0);
-  const scaleAnim = new Animated.Value(0.8);
-  const glowAnim = new Animated.Value(0);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1500,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-          Animated.timing(glowAnim, { toValue: 0, duration: 1000, useNativeDriver: true }),
-        ])
-      ),
-    ]).start();
-
-    // Navigate to landing page after 3.5s
-    const timeout = setTimeout(() => {
+    // Run animation sequence
+    Animated.sequence([
+      // Fade in and scale up
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+          easing: Easing.out(Easing.exp),
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1.1,
+          friction: 4,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Hold for a moment
+      Animated.delay(1000),
+      // Fade out and slightly scale up before transitioning
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1.3,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start(() => {
+      // Navigate to LandingPage after animation finishes
       navigation.replace('Landing');
-    }, 3500);
 
-    return () => clearTimeout(timeout);
-  }, []);
-
-  const glowInterpolation = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 20],
-  });
+    });
+  }, [fadeAnim, scaleAnim, navigation]);
 
   return (
     <View style={styles.container}>
-      <Animated.View
+      <Animated.Image
+        source={require('../assets/nativebridge_logo.png')} 
         style={[
-          styles.logoWrapper,
+          styles.logo,
           {
             opacity: fadeAnim,
             transform: [{ scale: scaleAnim }],
-            shadowRadius: glowInterpolation,
           },
         ]}
-      >
-        <Image source={require('../assets/nativebridge_logo.png')} style={styles.logo} />
-      </Animated.View>
+        resizeMode="contain"
+      />
     </View>
   );
 };
@@ -62,19 +65,17 @@ const SplashScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff', // white background
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  logoWrapper: {
-    shadowColor: '#00ffff',
-    shadowOpacity: 0.9,
-    shadowOffset: { width: 0, height: 0 },
   },
   logo: {
     width: 200,
     height: 200,
-    resizeMode: 'contain',
+    shadowColor: '#00ffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 15,
   },
 });
 
