@@ -23,6 +23,7 @@ Our mission is to **empower developers** to collaborate on cutting-edge technolo
 - React Native (Expo CLI)
 - Tailwind CSS (NativeWind)
 - JavaScript
+- TypeScript
 
 **Backend:**
 - Node.js / Express.js
