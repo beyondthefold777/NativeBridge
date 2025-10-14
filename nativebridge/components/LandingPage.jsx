@@ -17,6 +17,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 
 const { width } = Dimensions.get('window');
 
+// ✅ Gradient Icon 
 const GradientIcon = ({ name, size }) => (
   <MaskedView maskElement={<Ionicons name={name} size={size} color="white" />}>
     <LinearGradient
@@ -34,8 +35,9 @@ const GradientText = ({ text, style }) => (
       colors={['#00FFFF', '#0077FF']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }}
-    />
+    >
+      <Text style={[style, { opacity: 0 }]}>{text}</Text>
+    </LinearGradient>
   </MaskedView>
 );
 
@@ -52,16 +54,13 @@ const LandingPage = () => {
     setMenuOpen(!menuOpen);
   };
 
-  // Safe-area adjustments
-  const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 44;
+  const statusBarHeight =
+    Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 44;
   const bottomSafeArea = Platform.OS === 'ios' ? 34 : 28;
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0a0e17" translucent={false} />
-
-      {/* Top Fill for status bar */}
-      <View style={[styles.topFill, { height: statusBarHeight }]} />
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: statusBarHeight + 4 }]}>
@@ -78,7 +77,7 @@ const LandingPage = () => {
         style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}
       >
         <View style={styles.sidebarContent}>
-          <GradientText text="Menu" style={styles.sidebarTitle} />
+          <Text style={styles.sidebarTitle}>Menu</Text>
 
           {[
             { icon: 'briefcase-outline', label: 'Forum' },
@@ -88,7 +87,7 @@ const LandingPage = () => {
           ].map((item, index) => (
             <TouchableOpacity key={index} style={styles.sidebarItem}>
               <GradientIcon name={item.icon} size={20} />
-              <GradientText text={item.label} style={styles.sidebarText} />
+              <Text style={styles.sidebarText}>{item.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -105,41 +104,36 @@ const LandingPage = () => {
           Bridge the gap between developers and innovation.
         </Text>
 
+        {/* ✅ Go Online Button */}
         <TouchableOpacity style={styles.goOnlineBtn}>
           <LinearGradient
-            colors={['#00FFFF', '#0077FF']}
+            colors={['#0a0e17', '#000000']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={styles.goOnlineGradient}
           >
-            <Text style={styles.goOnlineText}>Go Online</Text>
+            <GradientText text="Go Online" style={styles.goOnlineText} />
           </LinearGradient>
         </TouchableOpacity>
       </View>
 
-      {/* Bottom Gradient + Nav */}
+      {/* ✅ Bottom Navigation with gradient icons */}
       <LinearGradient
         colors={['rgba(0,0,0,0.95)', '#0a0e17']}
         style={[styles.bottomGradient, { paddingBottom: bottomSafeArea + 10 }]}
       >
         <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <GradientIcon name="home" size={24} />
-            <Text style={styles.navText}>Home</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <GradientIcon name="briefcase" size={24} />
-            <Text style={styles.navText}>Jobs</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <GradientIcon name="chatbubbles" size={24} />
-            <Text style={styles.navText}>Forum</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <GradientIcon name="person" size={24} />
-            <Text style={styles.navText}>Profile</Text>
-          </TouchableOpacity>
+          {[
+            { icon: 'home', label: 'Home' },
+            { icon: 'briefcase', label: 'Jobs' },
+            { icon: 'chatbubbles', label: 'Forum' },
+            { icon: 'person', label: 'Profile' },
+          ].map((item, i) => (
+            <TouchableOpacity key={i} style={styles.navItem}>
+              <GradientIcon name={item.icon} size={24} />
+              <Text style={styles.navText}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </LinearGradient>
     </View>
@@ -149,22 +143,12 @@ const LandingPage = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
 
-  topFill: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#0a0e17',
-    zIndex: 1,
-  },
-
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 8,
     backgroundColor: '#0a0e17',
-    zIndex: 2,
   },
 
   overlay: {
@@ -188,15 +172,13 @@ const styles = StyleSheet.create({
     padding: 30,
   },
 
-  sidebarContent: {
-    marginTop: 50,
-  },
+  sidebarContent: { marginTop: 50 },
 
   sidebarTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 25,
-    textAlign: 'left',
+    color: '#fff',
   },
 
   sidebarItem: {
@@ -209,6 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     fontWeight: '600',
+    color: '#fff',
   },
 
   mainContent: {
@@ -227,16 +210,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  goOnlineBtn: { borderRadius: 30, overflow: 'hidden' },
+  goOnlineBtn: {
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
 
   goOnlineGradient: {
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   goOnlineText: {
-    color: '#000',
     fontWeight: 'bold',
     fontSize: 18,
     textAlign: 'center',
@@ -256,9 +243,7 @@ const styles = StyleSheet.create({
     height: 80,
   },
 
-  navItem: {
-    alignItems: 'center',
-  },
+  navItem: { alignItems: 'center' },
 
   navText: {
     color: '#00FFFF',
