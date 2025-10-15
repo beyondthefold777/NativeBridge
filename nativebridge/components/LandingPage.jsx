@@ -17,7 +17,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 
 const { width } = Dimensions.get('window');
 
-// ✅ Gradient Icon 
+// ✅ Gradient Icon
 const GradientIcon = ({ name, size }) => (
   <MaskedView maskElement={<Ionicons name={name} size={size} color="white" />}>
     <LinearGradient
@@ -41,7 +41,7 @@ const GradientText = ({ text, style }) => (
   </MaskedView>
 );
 
-const LandingPage = () => {
+const LandingPage = ({ navigation }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const slideAnim = useState(new Animated.Value(-width * 0.6))[0];
 
@@ -77,8 +77,23 @@ const LandingPage = () => {
         style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}
       >
         <View style={styles.sidebarContent}>
+
+          {/* ✅ Login/Register section */}
+          <View style={styles.authSection}>
+            <View style={styles.divider} />
+            <View style={styles.authLinks}>
+              <TouchableOpacity onPress={() => { toggleMenu(); navigation.navigate('Login'); }}>
+                <Text style={styles.authTextWhite}>Login</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => { toggleMenu(); navigation.navigate('Register'); }}>
+                <Text style={styles.authTextWhite}>Register</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <Text style={styles.sidebarTitle}>Menu</Text>
 
+          {/* Main menu items */}
           {[
             { icon: 'briefcase-outline', label: 'Forum' },
             { icon: 'settings-outline', label: 'Settings' },
@@ -117,7 +132,7 @@ const LandingPage = () => {
         </TouchableOpacity>
       </View>
 
-      {/* ✅ Bottom Navigation with gradient icons */}
+      {/* ✅ Bottom Navigation */}
       <LinearGradient
         colors={['rgba(0,0,0,0.95)', '#0a0e17']}
         style={[styles.bottomGradient, { paddingBottom: bottomSafeArea + 10 }]}
@@ -181,6 +196,11 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 
+  authSection: { marginBottom: 20 },
+  divider: { borderBottomWidth: 1, borderBottomColor: '#fff', marginVertical: 10, opacity: 0.3 },
+  authLinks: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 },
+  authTextWhite: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+
   sidebarItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -210,10 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  goOnlineBtn: {
-    borderRadius: 30,
-    overflow: 'hidden',
-  },
+  goOnlineBtn: { borderRadius: 30, overflow: 'hidden' },
 
   goOnlineGradient: {
     paddingVertical: 14,
