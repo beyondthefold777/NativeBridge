@@ -39,7 +39,7 @@ const RegisterPage = ({ navigation }) => {
     }
 
     try {
-      await axios.post('http://192.168.1.171:3000/api/auth/register', {
+      await axios.post('http:/172.20.10.12:3000/api/auth/register', {
         username,
         email,
         password,

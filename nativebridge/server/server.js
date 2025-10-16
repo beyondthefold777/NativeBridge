@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/auth'); // your auth.js file
 const cors = require('cors');
+const authRoutes = require('./routes/auth');
+require('dotenv').config(); // ✅ load .env variables
 
 const app = express();
 
@@ -10,20 +11,25 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB connection
-const MONGODB_URI = 'mongodb+srv://anthonybell67ab:Yankees18!@barberworld.4bjgh.mongodb.net/NativeBridge?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+  console.error('❌ Missing MONGODB_URI environment variable.');
+  process.exit(1);
+}
 
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected to NativeBridge database'))
-.catch((err) => console.error('MongoDB connection error:', err));
+mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
 
-// Server listening
-const PORT = 3000; // hardcoded port
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.get('/', (req, res) => res.send('🚀 Native Bridge API running!'));
+
+// Server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => console.log(`✅ Server running on port ${PORT}`));
